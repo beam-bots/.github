@@ -1,0 +1,59 @@
+# SPDX-FileCopyrightText: 2026 James Harton
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Bug Report
+description: File a bug report.
+labels: ["bug"]
+body:
+  - type: checkboxes
+    id: code-of-conduct
+    attributes:
+      label: Code of Conduct
+      description: By submitting this issue, you agree to follow our [Code of Conduct](https://github.com/beam-bots/.github/blob/main/CODE_OF_CONDUCT.md).
+      options:
+        - label: I agree to follow this project's Code of Conduct
+          required: true
+  - type: checkboxes
+    id: ai-policy
+    attributes:
+      label: AI Policy
+      description: By submitting this issue, you acknowledge our [AI Policy](https://github.com/beam-bots/.github/blob/main/AI_POLICY.md).
+      options:
+        - label: I agree to follow this project's AI Policy, or I agree that AI was not used while creating this issue.
+          required: true
+  - type: textarea
+    id: versions
+    attributes:
+      label: Versions
+      description: |
+        Please provide the relevant versions of Elixir, Erlang and any packages involved.
+        Check if upgrading to the latest version resolves the issue.
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: Operating system
+    validations:
+      required: true
+  - type: textarea
+    id: current-behaviour
+    attributes:
+      label: Current Behaviour
+      description: |
+        Include code samples, errors, and stacktraces if appropriate.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: |
+        Steps to reproduce the issue. Ideally a minimal reproduction in a GitHub repository or a PR with a failing test case.
+    validations:
+      required: true
+  - type: textarea
+    id: expected-behaviour
+    attributes:
+      label: Expected Behaviour
