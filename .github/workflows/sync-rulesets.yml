@@ -1,0 +1,90 @@
+name: Sync Repository Rulesets
+
+on:
+  # Run daily at 00:00 UTC
+  schedule:
+    - cron: "0 0 * * *"
+
+  # Run when ruleset config changes
+  push:
+    branches: [main]
+    paths:
+      - "rulesets/**"
+      - "scripts/sync-rulesets.sh"
+      - ".github/workflows/sync-rulesets.yml"
+
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: Sync Rulesets
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Sync rulesets to all repositories
+        id: sync
+        env:
+          GH_TOKEN: ${{ secrets.RULESET_SYNC_TOKEN }}
+        run: |
+          chmod +x scripts/sync-rulesets.sh
+          ./scripts/sync-rulesets.sh 2>&1 | tee sync-output.txt
+
+      - name: Create issue on failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.RULESET_SYNC_TOKEN }}
+        run: |
+          # Ensure the label exists
+          gh label create "ruleset-sync-failure" --repo beam-bots/.github \
+            --description "Automated issue from ruleset sync workflow" \
+            --color "d73a4a" 2>/dev/null || true
+
+          # Check if there's already an open issue for this
+          existing=$(gh issue list --repo beam-bots/.github --state open --label "ruleset-sync-failure" --json number --jq '.[0].number // empty')
+
+          if [[ -n "$existing" ]]; then
+            echo "Issue #${existing} already exists, adding comment"
+            gh issue comment "$existing" --repo beam-bots/.github --body "$(cat <<EOF
+          Sync failed again at $(date -u +"%Y-%m-%d %H:%M:%S UTC")
+
+          **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          <details>
+          <summary>Output</summary>
+
+          \`\`\`
+          $(cat sync-output.txt 2>/dev/null || echo "No output captured")
+          \`\`\`
+
+          </details>
+          EOF
+          )"
+          else
+            echo "Creating new issue"
+            gh issue create --repo beam-bots/.github \
+              --title "Ruleset sync failed" \
+              --assignee jimsynz \
+              --label "ruleset-sync-failure" \
+              --body "$(cat <<EOF
+          The repository ruleset sync workflow failed.
+
+          **Run:** ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
+          ## Common causes
+
+          - **Token expired**: Create a new fine-grained PAT at https://github.com/settings/tokens?type=beta and update the \`RULESET_SYNC_TOKEN\` secret
+          - **Permission issue**: Ensure the token has Administration (read/write) on all repositories
+          - **API error**: Temporary GitHub API issue, may resolve on next run
+
+          ## Output
+
+          \`\`\`
+          $(cat sync-output.txt 2>/dev/null || echo "No output captured")
+          \`\`\`
+          EOF
+          )"
+          fi
