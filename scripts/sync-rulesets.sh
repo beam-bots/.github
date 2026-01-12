@@ -67,7 +67,14 @@ check_token_expiration() {
 # Look up team ID by slug
 get_team_id() {
   local team_slug="$1"
-  gh api "orgs/${ORG}/teams/${team_slug}" --jq '.id' 2>/dev/null || echo ""
+  local result
+  result=$(gh api "orgs/${ORG}/teams/${team_slug}" --jq '.id' 2>/dev/null) || return 1
+  # Verify we got a number, not an error object
+  if [[ "$result" =~ ^[0-9]+$ ]]; then
+    echo "$result"
+  else
+    return 1
+  fi
 }
 
 # Get all repos in the org (excluding .github, archived, and forks)
@@ -104,8 +111,7 @@ prepare_ruleset() {
 
     for team_name in $team_names; do
       local team_id
-      team_id=$(get_team_id "$team_name")
-      if [[ -n "$team_id" ]]; then
+      if team_id=$(get_team_id "$team_name"); then
         ruleset_json=$(echo "$ruleset_json" | jq --arg name "$team_name" --argjson id "$team_id" '
           .bypass_actors |= map(
             if .actor_type == "Team" and .actor_name == $name then
@@ -115,7 +121,10 @@ prepare_ruleset() {
           )
         ')
       else
-        log_warn "Could not find team: ${team_name}"
+        log_warn "Could not resolve team '${team_name}' - removing from bypass actors (PAT may need 'Organization: Members: Read' permission)"
+        ruleset_json=$(echo "$ruleset_json" | jq --arg name "$team_name" '
+          .bypass_actors |= map(select(.actor_type != "Team" or .actor_name != $name))
+        ')
       fi
     done
   fi

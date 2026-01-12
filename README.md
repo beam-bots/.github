@@ -34,9 +34,12 @@ The sync workflow requires a fine-grained Personal Access Token stored as `RULES
 
 - **Resource owner**: beam-bots organisation
 - **Repository access**: All repositories
-- **Permissions**:
+- **Repository permissions**:
   - Administration: Read and write (for rulesets)
   - Metadata: Read-only (required)
+  - Issues: Read and write (for failure notifications)
+- **Organisation permissions**:
+  - Members: Read-only (to resolve team names in bypass actors)
 
 To create the token:
 
