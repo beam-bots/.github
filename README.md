@@ -1,5 +1,9 @@
 # Beam Bots GitHub Organisation Configuration
 
+[![CI](https://github.com/beam-bots/.github/actions/workflows/sync-rulesets.yml/badge.svg)](https://github.com/beam-bots/.github/actions/workflows/sync-rulesets.yml)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache--2.0-green.svg)](https://opensource.org/licenses/Apache-2.0)
+[![REUSE status](https://api.reuse.software/badge/github.com/beam-bots/.github)](https://api.reuse.software/info/github.com/beam-bots/.github)
+
 This repository contains organisation-wide configuration for beam-bots:
 
 - **Community health files** - Default CODE_OF_CONDUCT, CONTRIBUTING, SECURITY, etc.
