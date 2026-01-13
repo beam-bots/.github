@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2026 James Harton
+#
+# SPDX-License-Identifier: Apache-2.0
+
+name: Docs CI
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+jobs:
+  reuse:
+    name: REUSE compliance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: REUSE compliance check
+        uses: fsfe/reuse-action@772649cfa03a64a08c458c7cca9a6a473d74e7f9 # v6
+
+  canary:
+    name: canary
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - reuse
+    steps:
+      - name: Check all jobs passed
+        run: |
+          if [[ "${{ needs.reuse.result }}" != "success" ]]; then exit 1; fi
+          echo "All checks passed!"
