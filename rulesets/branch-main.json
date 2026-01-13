@@ -29,15 +29,7 @@
       "type": "required_status_checks",
       "parameters": {
         "required_status_checks": [
-          { "context": "CI / test" },
-          { "context": "CI / formatter" },
-          { "context": "CI / spark-formatter" },
-          { "context": "CI / spark-cheat-sheets" },
-          { "context": "CI / dialyzer" },
-          { "context": "CI / audit" },
-          { "context": "CI / unused-deps" },
-          { "context": "CI / reuse" },
-          { "context": "CI / build-docs" }
+          { "context": "CI / canary" }
         ],
         "strict_required_status_checks_policy": false
       }

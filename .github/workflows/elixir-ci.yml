@@ -180,6 +180,38 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5
 
+  canary:
+    name: canary
+    runs-on: ubuntu-latest
+    if: always()
+    needs:
+      - test
+      - credo
+      - formatter
+      - spark-formatter
+      - spark-cheat-sheets
+      - dialyzer
+      - audit
+      - unused-deps
+      - reuse
+      - build-docs
+    steps:
+      - name: Check all jobs passed
+        run: |
+          # Required jobs must succeed
+          if [[ "${{ needs.test.result }}" != "success" ]]; then exit 1; fi
+          if [[ "${{ needs.credo.result }}" != "success" ]]; then exit 1; fi
+          if [[ "${{ needs.formatter.result }}" != "success" ]]; then exit 1; fi
+          if [[ "${{ needs.dialyzer.result }}" != "success" ]]; then exit 1; fi
+          if [[ "${{ needs.audit.result }}" != "success" ]]; then exit 1; fi
+          if [[ "${{ needs.unused-deps.result }}" != "success" ]]; then exit 1; fi
+          if [[ "${{ needs.reuse.result }}" != "success" ]]; then exit 1; fi
+          if [[ "${{ needs.build-docs.result }}" != "success" ]]; then exit 1; fi
+          # Optional jobs must succeed or be skipped
+          if [[ "${{ needs.spark-formatter.result }}" != "success" && "${{ needs.spark-formatter.result }}" != "skipped" ]]; then exit 1; fi
+          if [[ "${{ needs.spark-cheat-sheets.result }}" != "success" && "${{ needs.spark-cheat-sheets.result }}" != "skipped" ]]; then exit 1; fi
+          echo "All checks passed!"
+
   release:
     name: Publish to Hex.pm
     runs-on: ubuntu-latest
