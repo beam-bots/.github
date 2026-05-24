@@ -11,5 +11,5 @@
     ":disableDependencyDashboard"
   ],
   "rebaseWhen": "behind-base-branch",
-  "enabledManagers": ["asdf"]
+  "enabledManagers": ["asdf", "github-actions"]
 }
