@@ -4,7 +4,7 @@
     "config:recommended",
     ":semanticCommits",
     ":semanticPrefixChore",
-    "schedule:monthly",
+    "schedule:weekly",
     ":assignee(jimsynz)",
     ":rebaseStalePrs",
     ":enableVulnerabilityAlerts",
