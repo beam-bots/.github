@@ -171,7 +171,7 @@ jobs:
     name: Deploy docs to GitHub Pages
     runs-on: ubuntu-latest
     needs: canary
-    if: ${{ inputs.enable-docs-deploy && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+    if: ${{ !cancelled() && needs.canary.result == 'success' && inputs.enable-docs-deploy && github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
     permissions:
       pages: write
       id-token: write
@@ -219,7 +219,7 @@ jobs:
     name: Publish to Hex.pm
     runs-on: ubuntu-latest
     needs: canary
-    if: ${{ inputs.enable-release && startsWith(github.ref, 'refs/tags/v') }}
+    if: ${{ !cancelled() && needs.canary.result == 'success' && inputs.enable-release && startsWith(github.ref, 'refs/tags/v') }}
     permissions:
       contents: write
     steps:
