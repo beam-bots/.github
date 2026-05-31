@@ -2,7 +2,7 @@
 
 ## Welcome!
 
-We welcome contributions of all sizes, from typos and documentation improvements to bug fixes and features. Check the issue tracker or join the [Discord](https://discord.gg/McZmMaR34P) to see how you can help. Make sure to read the rules below as well.
+We welcome contributions of all sizes, from typos and documentation improvements to bug fixes and features. Check the issue tracker or join the [Discord](https://discord.gg/QSag7Vuc4N) to see how you can help. Make sure to read the rules below as well.
 
 ## Contributing to Documentation
 
