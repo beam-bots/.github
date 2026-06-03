@@ -33,7 +33,7 @@ jobs:
     name: MIX_ENV=test mix compile
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: team-alembic/staple-actions/actions/install-elixir@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
       - name: Set OS deps compile partition count
         run: echo "MIX_OS_DEPS_COMPILE_PARTITION_COUNT=$(($(lscpu -p | grep -v '^#' | sort -u -t, -k 2,4 | wc -l) / 2))" >> $GITHUB_ENV
@@ -47,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-test
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: team-alembic/staple-actions/actions/mix-test@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
         with:
           mix-env: test
@@ -59,7 +59,7 @@ jobs:
     permissions:
       security-events: write
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: team-alembic/staple-actions/actions/mix-credo@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
         with:
           mix-env: test
@@ -79,7 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-test
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: team-alembic/staple-actions/actions/mix-format@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
         with:
           mix-env: test
@@ -90,7 +90,7 @@ jobs:
     needs: build-test
     if: ${{ inputs.enable-spark-formatter }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: team-alembic/staple-actions/actions/mix-task@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
         with:
           mix-env: test
@@ -102,7 +102,7 @@ jobs:
     needs: build-test
     if: ${{ inputs.enable-spark-cheat-sheets }}
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: team-alembic/staple-actions/actions/mix-task@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
         with:
           mix-env: test
@@ -117,7 +117,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-test
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: team-alembic/staple-actions/actions/mix-dialyzer@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
         with:
           mix-env: test
@@ -127,7 +127,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-test
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: team-alembic/staple-actions/actions/mix-hex-audit@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
       - uses: team-alembic/staple-actions/actions/mix-task@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
         with:
@@ -139,7 +139,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-test
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: team-alembic/staple-actions/actions/mix-task@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
         with:
           mix-env: test
@@ -149,7 +149,7 @@ jobs:
     name: REUSE compliance
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: REUSE compliance check
         uses: fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6
 
@@ -158,7 +158,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-test
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - uses: team-alembic/staple-actions/actions/mix-docs@5451c7576d8ccd668b4da1b6993f76d01df350ff # main
         with:
           mix-env: dev
@@ -223,7 +223,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       - name: Extract release notes from CHANGELOG.md
         id: extract-notes
         run: |
