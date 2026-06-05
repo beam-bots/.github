@@ -21,10 +21,8 @@ Beam Bots is a framework for building resilient robotics projects in Elixir. Def
 
 ## Ecosystem
 
-- [`bb`](https://github.com/beam-bots/bb) - Core framework
-- [`bb_kino`](https://github.com/beam-bots/bb_kino) - Livebook widgets for robot control and visualisation
-- [`bb_liveview`](https://github.com/beam-bots/bb_liveview) - Phoenix LiveView dashboard
-- [`bb_ik_fabrik`](https://github.com/beam-bots/bb_ik_fabrik) - FABRIK inverse kinematics solver
-- [`bb_servo_pca9685`](https://github.com/beam-bots/bb_servo_pca9685) - PCA9685 PWM servo driver
-- [`bb_servo_pigpio`](https://github.com/beam-bots/bb_servo_pigpio) - pigpio servo driver (Raspberry Pi)
-- [`bb_servo_robotis`](https://github.com/beam-bots/bb_servo_robotis) - Robotis/Dynamixel servo driver
+Beam Bots is an ecosystem of packages that work together so you can build your
+robot with exactly the features you want — start with the core framework and add
+the servo drivers, sensors, kinematics solvers, and tooling your project needs.
+
+Browse all the packages at [github.com/beam-bots](https://github.com/orgs/beam-bots/repositories).
