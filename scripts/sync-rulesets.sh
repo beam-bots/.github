@@ -77,10 +77,11 @@ get_team_id() {
   fi
 }
 
-# Get all repos in the org (excluding .github, archived, and forks)
+# Get all repos in the org (excluding .github, archived, forks, and private
+# repos — rulesets are unavailable on private repos without a paid plan)
 get_repos() {
   gh api "orgs/${ORG}/repos" --paginate --jq '
-    .[] | select(.archived == false and .fork == false and .name != ".github") | .name
+    .[] | select(.archived == false and .fork == false and .private == false and .name != ".github") | .name
   '
 }
 
