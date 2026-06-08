@@ -11,7 +11,26 @@
     ":disableDependencyDashboard"
   ],
   "rebaseWhen": "behind-base-branch",
-  "enabledManagers": ["asdf", "github-actions"],
+  "enabledManagers": ["asdf", "github-actions", "custom.regex"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/)\\.tool-versions$/"],
+      "matchStrings": ["zola (?<currentValue>\\S+)"],
+      "depNameTemplate": "zola",
+      "packageNameTemplate": "getzola/zola",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>.+)$",
+      "versioningTemplate": "semver"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": ["/(^|/)\\.tool-versions$/"],
+      "matchStrings": ["pipx (?<currentValue>\\S+)"],
+      "depNameTemplate": "pipx",
+      "datasourceTemplate": "pypi"
+    }
+  ],
   "packageRules": [
     {
       "matchManagers": ["github-actions"],
