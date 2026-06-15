@@ -35,6 +35,11 @@
     {
       "matchManagers": ["github-actions"],
       "schedule": ["before 4am"]
+    },
+    {
+      "matchFileNames": ["**/.tool-versions"],
+      "groupName": "tool-versions",
+      "separateMajorMinor": false
     }
   ]
 }
