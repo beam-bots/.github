@@ -34,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: team-alembic/staple-actions/actions/install-elixir@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/install-elixir@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
       - name: Set OS deps compile partition count
         run: echo "MIX_OS_DEPS_COMPILE_PARTITION_COUNT=$(($(lscpu -p | grep -v '^#' | sort -u -t, -k 2,4 | wc -l) / 2))" >> $GITHUB_ENV
-      - uses: team-alembic/staple-actions/actions/mix-compile@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-compile@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
           args: "--warnings-as-errors"
@@ -48,7 +48,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: team-alembic/staple-actions/actions/mix-test@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-test@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
 
@@ -60,11 +60,11 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: team-alembic/staple-actions/actions/mix-credo@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-credo@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
       - name: Run Credo SAST
-        uses: team-alembic/staple-actions/actions/mix-task@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+        uses: team-alembic/staple-actions/actions/mix-task@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
           task: credo --format sarif > results.sarif
@@ -80,7 +80,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: team-alembic/staple-actions/actions/mix-format@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-format@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
 
@@ -91,7 +91,7 @@ jobs:
     if: ${{ inputs.enable-spark-formatter }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: team-alembic/staple-actions/actions/mix-task@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-task@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
           task: spark.formatter --check
@@ -103,11 +103,11 @@ jobs:
     if: ${{ inputs.enable-spark-cheat-sheets }}
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: team-alembic/staple-actions/actions/mix-task@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-task@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
           task: spark.cheat_sheets --dry-run --yes
-      - uses: team-alembic/staple-actions/actions/mix-task@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-task@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
           task: spark.cheat_sheets --check
@@ -118,7 +118,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: team-alembic/staple-actions/actions/mix-dialyzer@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-dialyzer@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
 
@@ -128,8 +128,8 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: team-alembic/staple-actions/actions/mix-hex-audit@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
-      - uses: team-alembic/staple-actions/actions/mix-task@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-hex-audit@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
+      - uses: team-alembic/staple-actions/actions/mix-task@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
           task: deps.audit
@@ -140,7 +140,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: team-alembic/staple-actions/actions/mix-task@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-task@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
           task: deps.unlock --check-unused
@@ -159,7 +159,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
-      - uses: team-alembic/staple-actions/actions/mix-docs@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-docs@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: dev
           use-cache: false
@@ -295,7 +295,7 @@ jobs:
             --title ${GITHUB_REF#refs/tags/} \
             --generate-notes \
             ${GITHUB_REF#refs/tags/}
-      - uses: team-alembic/staple-actions/actions/mix-hex-publish@8b0f5a1a7cadfbc86c2d00343d4a06a45352ef13 # main
+      - uses: team-alembic/staple-actions/actions/mix-hex-publish@d8e64cbaa32c80b6cc199ec050612ec6d0e072f9 # main
         with:
           mix-env: test
           hex-api-key: ${{ secrets.HEX_API_KEY }}
