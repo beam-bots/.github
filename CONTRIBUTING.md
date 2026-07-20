@@ -146,13 +146,45 @@ Testing in your own application is not sufficient - you must also include automa
    mix check --no-retry
    ```
 
-4. **Commit your changes:**
+4. **Commit your changes** using [conventional commits](https://www.conventionalcommits.org):
    ```bash
    git add .
-   git commit -m "Add feature description"
+   git commit -m "feat: add trajectory smoothing to the actuator"
    ```
 
 5. **Push and create a pull request**
+
+### Stack Your Commits, Not Your PRs
+
+Please keep each pull request to a **single logical change**, and express the
+steps of that change as a **stack of well-shaped commits** rather than a chain
+of dependent pull requests.
+
+- **One PR, one concern.** A PR should do one thing that can be reviewed,
+  approved, and merged on its own. If you find yourself opening PR #2 that can't
+  land until PR #1 does, that's usually a sign the work belongs in a single PR.
+- **Stack commits inside that PR.** Break the change into a readable sequence of
+  commits, each of which compiles, passes checks, and tells one part of the
+  story. Reviewers read the diff commit-by-commit, so a clean stack is far
+  easier to follow than one giant squash.
+- **Every commit is conventional.** We use [conventional
+  commits](https://www.conventionalcommits.org) — `type: description` or
+  `type(scope): description`. `git_ops` reads them to bump versions and generate
+  each package's `CHANGELOG.md`, so the message is release infrastructure, not
+  just a note to yourself. Prefer `improvement:` over `feat:` for most
+  enhancements, and mark breaking changes with `!` (e.g. `feat!:`).
+- **Rebase, don't merge.** Keep your branch current by rebasing on the default
+  branch so the history stays linear. Force-push your feature branch freely —
+  it's yours until the PR merges.
+- **Tidy before review.** Squash `wip`, `fixup`, and `oops typo` commits into
+  the change they belong to (`git rebase -i`) before asking for review. Ship the
+  history you'd want to `git blame` in two years, not the one you happened to
+  type.
+
+If a change genuinely is too large for one PR, that's worth a conversation
+first — open a [proposal](https://github.com/beam-bots/proposals) or ask in the
+[Discord](https://discord.gg/QSag7Vuc4N) about how to split it, rather than
+landing a speculative stack of PRs.
 
 ### Common Development Tasks
 
