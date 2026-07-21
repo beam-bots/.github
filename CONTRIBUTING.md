@@ -101,6 +101,70 @@ This command runs a comprehensive suite of checks including:
 - Documentation generation and validation
 - REUSE compliance
 
+### Copyright & Licensing Headers
+
+Every source file in the project carries an [SPDX](https://reuse.software) header
+declaring its copyright holders and licence, and `reuse lint` (part of `mix
+check`) fails the build if any file is missing one. When you contribute code you
+become one of those copyright holders, so please add yourself.
+
+A header has two parts — one or more `SPDX-FileCopyrightText` lines and a single
+`SPDX-License-Identifier`:
+
+```elixir
+# SPDX-FileCopyrightText: 2026 James Harton
+#
+# SPDX-License-Identifier: Apache-2.0
+```
+
+The comment style varies by file type:
+
+- **Code** (`.ex`, `.exs`, `.sh`, …) uses the language's line-comment prefix
+  (`#` for Elixir).
+- **Markdown** wraps the header in an HTML comment:
+  ```markdown
+  <!--
+  SPDX-FileCopyrightText: 2026 James Harton
+
+  SPDX-License-Identifier: Apache-2.0
+  -->
+  ```
+- **Binaries, lockfiles, and JSON** (anything that can't hold a comment) get a
+  `<filename>.license` sidecar containing the same header as plain text.
+
+**When you add a new file,** include a header crediting *yourself* — you're the
+author, so it's your name that goes on it. Don't copy an existing file's header
+verbatim; the copyright holder is you, not whoever wrote the file you're working
+from:
+
+```
+SPDX-FileCopyrightText: <year> <Your Name>
+```
+
+Use the current year and whatever name (and optionally email, e.g.
+`<year> Jane Doe <jane@example.com>`) you want on the record.
+
+**When you edit an existing file,** add yourself only if you're contributing new
+code or prose — a function, a module, a doc section, a meaningful behaviour
+change. Add your own `SPDX-FileCopyrightText` line *beneath* the existing one(s)
+rather than replacing them; a file can have as many copyright holders as it has
+contributors:
+
+```elixir
+# SPDX-FileCopyrightText: 2026 James Harton
+# SPDX-FileCopyrightText: 2026 Jane Doe
+#
+# SPDX-License-Identifier: Apache-2.0
+```
+
+Don't bother for typo fixes, reformatting, renames, or dependency bumps — those
+don't add anything new to credit, and `git log` records them regardless. If
+you're unsure, leaving the headers alone is fine.
+
+Leave the `SPDX-License-Identifier` alone — all contributions are under
+`Apache-2.0`. Run `mix check --no-retry` (or `reuse lint` directly) before
+pushing to confirm every file is still covered.
+
 ### Testing with Your Application
 
 If you want to test your changes with your own application, you can use Beam Bots as a local dependency. In your application's `mix.exs`, replace the hex dependency with a path dependency:
