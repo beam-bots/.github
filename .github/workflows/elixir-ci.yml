@@ -131,8 +131,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       # Rewriting .tool-versions rather than calling setup-beam directly: every
       # staple action installs Elixir from that file, so an explicit setup-beam
-      # step would just be overwritten. It also keys the build caches, so each
-      # leg gets its own without needing a cache-prefix.
+      # step would just be overwritten.
       - name: Pin .tool-versions to the matrix combination
         env:
           MATRIX_ELIXIR: "${{ matrix.elixir }}-otp-${{ matrix.otp_major }}"
@@ -146,12 +145,19 @@ jobs:
           ' .tool-versions > .tool-versions.matrix
           mv .tool-versions.matrix .tool-versions
           cat .tool-versions
+      # cache-prefix is load-bearing: only the _build cache hashes
+      # .tool-versions, while the MIX_HOME and HEX_HOME caches key on the
+      # mix.lock hash alone. Without a per-combination prefix a leg restores
+      # the Hex archive the pinned Elixir compiled and dies on the version
+      # mismatch — Elixir 1.19 has no Enum.__in__/2 for a 1.20 archive to call.
+      #
       # No --warnings-as-errors here: older Elixir versions emit warnings the
       # pinned one does not, and this job is about compiling and passing, not
       # warning hygiene. build-test covers that on the pinned version.
       - uses: team-alembic/staple-actions/actions/mix-test@488c794f93225c358bbec47152620a59c6f53e6a # main
         with:
           mix-env: test
+          cache-prefix: elixir-${{ matrix.elixir }}-otp-${{ matrix.otp_major }}
 
   credo:
     name: mix credo --strict
