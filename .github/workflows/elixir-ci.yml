@@ -52,6 +52,107 @@ jobs:
         with:
           mix-env: test
 
+  version-matrix:
+    name: Resolve version matrix
+    runs-on: ubuntu-latest
+    outputs:
+      combos: ${{ steps.resolve.outputs.combos }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Resolve supported Elixir/OTP combinations
+        id: resolve
+        env:
+          ELIXIR_BUILDS_URL: https://builds.hex.pm/builds/elixir/builds.txt
+          OTP_BUILDS_URL: https://builds.hex.pm/builds/otp/ubuntu-24.04/builds.txt
+        run: |
+          set -euo pipefail
+
+          pinned_elixir=$(awk '$1 == "elixir" {sub(/-otp-.*/, "", $2); print $2; exit}' .tool-versions)
+          pinned_otp_major=$(awk '$1 == "erlang" {split($2, v, "."); print v[1]; exit}' .tool-versions)
+          declared=$(grep -oE 'elixir:[[:space:]]*"[^"]*"' mix.exs | grep -oE '[0-9]+\.[0-9]+' | head -1)
+
+          if [ -z "$pinned_elixir" ] || [ -z "$pinned_otp_major" ] || [ -z "$declared" ]; then
+            echo "could not determine version bounds:" >&2
+            echo "  mix.exs declares: ${declared:-<none>}" >&2
+            echo "  .tool-versions pins: ${pinned_elixir:-<none>} / ${pinned_otp_major:-<none>}" >&2
+            exit 1
+          fi
+
+          pinned_minor=$(echo "$pinned_elixir" | cut -d. -f1,2)
+
+          # "1.19.5 28" per line, one line per publicly built Elixir/OTP pair.
+          elixir_combos=$(curl -fsSL "$ELIXIR_BUILDS_URL" \
+            | awk '{print $1}' \
+            | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+-otp-[0-9]+$' \
+            | sed 's/^v//; s/-otp-/ /')
+
+          latest_otp_per_major=$(curl -fsSL "$OTP_BUILDS_URL" \
+            | awk '{print $1}' \
+            | grep -E '^OTP-[0-9]+\.[0-9]+' \
+            | sed 's/^OTP-//' \
+            | sort -V \
+            | awk -F. '{latest[$1] = $0} END {for (m in latest) print m, latest[m]}' \
+            | sort -n)
+
+          # The pinned minor is excluded: build-test and test already cover it,
+          # and at the exact patch the repo pins rather than the latest.
+          minors=$(echo "$elixir_combos" \
+            | awk '{split($1, v, "."); print v[1] "." v[2]}' \
+            | sort -uV \
+            | awk -v lo="$declared" -v hi="$pinned_minor" '
+                function num(v) { split(v, p, "."); return p[1] * 1000 + p[2] }
+                num($0) >= num(lo) && num($0) < num(hi)')
+
+          combos=""
+          for minor in $minors; do
+            patch=$(echo "$elixir_combos" | awk -v m="$minor." 'index($1, m) == 1 {print $1}' | sort -uV | tail -1)
+            otp_major=$(echo "$elixir_combos" \
+              | awk -v ver="$patch" -v cap="$pinned_otp_major" '$1 == ver && $2 + 0 <= cap + 0 {print $2}' \
+              | sort -n | tail -1)
+            [ -n "$otp_major" ] || continue
+            erlang=$(echo "$latest_otp_per_major" | awk -v m="$otp_major" '$1 == m {print $2}')
+            [ -n "$erlang" ] || continue
+            combos="${combos}${combos:+,}{\"elixir\":\"${patch}\",\"erlang\":\"${erlang}\",\"otp_major\":\"${otp_major}\"}"
+          done
+
+          echo "mix.exs admits >= ${declared}; .tool-versions pins ${pinned_elixir}/OTP ${pinned_otp_major}"
+          echo "combos=[${combos}]" | tee -a "$GITHUB_OUTPUT"
+
+  compatibility:
+    name: Elixir ${{ matrix.elixir }} / OTP ${{ matrix.otp_major }}
+    runs-on: ubuntu-latest
+    needs: version-matrix
+    if: ${{ needs.version-matrix.outputs.combos != '[]' }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.version-matrix.outputs.combos) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      # Rewriting .tool-versions rather than calling setup-beam directly: every
+      # staple action installs Elixir from that file, so an explicit setup-beam
+      # step would just be overwritten. It also keys the build caches, so each
+      # leg gets its own without needing a cache-prefix.
+      - name: Pin .tool-versions to the matrix combination
+        env:
+          MATRIX_ELIXIR: "${{ matrix.elixir }}-otp-${{ matrix.otp_major }}"
+          MATRIX_ERLANG: ${{ matrix.erlang }}
+        run: |
+          set -euo pipefail
+          awk -v elixir="$MATRIX_ELIXIR" -v erlang="$MATRIX_ERLANG" '
+            $1 == "elixir" { print "elixir " elixir; next }
+            $1 == "erlang" { print "erlang " erlang; next }
+            { print }
+          ' .tool-versions > .tool-versions.matrix
+          mv .tool-versions.matrix .tool-versions
+          cat .tool-versions
+      # No --warnings-as-errors here: older Elixir versions emit warnings the
+      # pinned one does not, and this job is about compiling and passing, not
+      # warning hygiene. build-test covers that on the pinned version.
+      - uses: team-alembic/staple-actions/actions/mix-test@488c794f93225c358bbec47152620a59c6f53e6a # main
+        with:
+          mix-env: test
+
   credo:
     name: mix credo --strict
     runs-on: ubuntu-latest
@@ -189,6 +290,8 @@ jobs:
     if: always()
     needs:
       - test
+      - version-matrix
+      - compatibility
       - credo
       - formatter
       - spark-formatter
@@ -203,6 +306,9 @@ jobs:
         run: |
           # Required jobs must succeed
           if [[ "${{ needs.test.result }}" != "success" ]]; then exit 1; fi
+          # Required, not optional: a failure here skips compatibility, which
+          # would otherwise read as a legitimate "no versions to test".
+          if [[ "${{ needs.version-matrix.result }}" != "success" ]]; then exit 1; fi
           if [[ "${{ needs.credo.result }}" != "success" ]]; then exit 1; fi
           if [[ "${{ needs.formatter.result }}" != "success" ]]; then exit 1; fi
           if [[ "${{ needs.dialyzer.result }}" != "success" ]]; then exit 1; fi
@@ -211,6 +317,8 @@ jobs:
           if [[ "${{ needs.reuse.result }}" != "success" ]]; then exit 1; fi
           if [[ "${{ needs.build-docs.result }}" != "success" ]]; then exit 1; fi
           # Optional jobs must succeed or be skipped
+          # compatibility is skipped when mix.exs admits no version below the pinned one
+          if [[ "${{ needs.compatibility.result }}" != "success" && "${{ needs.compatibility.result }}" != "skipped" ]]; then exit 1; fi
           if [[ "${{ needs.spark-formatter.result }}" != "success" && "${{ needs.spark-formatter.result }}" != "skipped" ]]; then exit 1; fi
           if [[ "${{ needs.spark-cheat-sheets.result }}" != "success" && "${{ needs.spark-cheat-sheets.result }}" != "skipped" ]]; then exit 1; fi
           echo "All checks passed!"
