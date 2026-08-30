@@ -34,10 +34,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: team-alembic/staple-actions/actions/install-elixir@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/install-elixir@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
       - name: Set OS deps compile partition count
         run: echo "MIX_OS_DEPS_COMPILE_PARTITION_COUNT=$(($(lscpu -p | grep -v '^#' | sort -u -t, -k 2,4 | wc -l) / 2))" >> $GITHUB_ENV
-      - uses: team-alembic/staple-actions/actions/mix-compile@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-compile@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
           args: "--warnings-as-errors"
@@ -48,7 +48,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: team-alembic/staple-actions/actions/mix-test@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-test@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
 
@@ -154,7 +154,7 @@ jobs:
       # No --warnings-as-errors here: older Elixir versions emit warnings the
       # pinned one does not, and this job is about compiling and passing, not
       # warning hygiene. build-test covers that on the pinned version.
-      - uses: team-alembic/staple-actions/actions/mix-test@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-test@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
           cache-prefix: elixir-${{ matrix.elixir }}-otp-${{ matrix.otp_major }}
@@ -167,11 +167,11 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: team-alembic/staple-actions/actions/mix-credo@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-credo@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
       - name: Run Credo SAST
-        uses: team-alembic/staple-actions/actions/mix-task@488c794f93225c358bbec47152620a59c6f53e6a # main
+        uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
           task: credo --format sarif > results.sarif
@@ -187,7 +187,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: team-alembic/staple-actions/actions/mix-format@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-format@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
 
@@ -198,7 +198,7 @@ jobs:
     if: ${{ inputs.enable-spark-formatter }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: team-alembic/staple-actions/actions/mix-task@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
           task: spark.formatter --check
@@ -210,11 +210,11 @@ jobs:
     if: ${{ inputs.enable-spark-cheat-sheets }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: team-alembic/staple-actions/actions/mix-task@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
           task: spark.cheat_sheets --dry-run --yes
-      - uses: team-alembic/staple-actions/actions/mix-task@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
           task: spark.cheat_sheets --check
@@ -225,7 +225,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: team-alembic/staple-actions/actions/mix-dialyzer@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-dialyzer@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
 
@@ -235,8 +235,8 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: team-alembic/staple-actions/actions/mix-hex-audit@488c794f93225c358bbec47152620a59c6f53e6a # main
-      - uses: team-alembic/staple-actions/actions/mix-task@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-hex-audit@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
           task: deps.audit
@@ -247,7 +247,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: team-alembic/staple-actions/actions/mix-task@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
           task: deps.unlock --check-unused
@@ -266,7 +266,7 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - uses: team-alembic/staple-actions/actions/mix-docs@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-docs@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: dev
           use-cache: false
@@ -409,7 +409,7 @@ jobs:
             --title ${GITHUB_REF#refs/tags/} \
             --generate-notes \
             ${GITHUB_REF#refs/tags/}
-      - uses: team-alembic/staple-actions/actions/mix-hex-publish@488c794f93225c358bbec47152620a59c6f53e6a # main
+      - uses: team-alembic/staple-actions/actions/mix-hex-publish@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
           hex-api-key: ${{ secrets.HEX_API_KEY }}
