@@ -23,6 +23,14 @@ on:
         description: "Publish to Hex.pm on version tags"
         type: boolean
         default: true
+      os-packages:
+        description: >
+          Space-separated apt packages to install before compiling. For
+          dependencies that build C code against a system library the runner
+          does not ship — `bb_nsk` needs `libmnl-dev`, because `nerves_runtime`
+          reaches `nerves_uevent`.
+        type: string
+        default: ""
     secrets:
       HEX_API_KEY:
         description: "Hex.pm API key for publishing"
@@ -34,6 +42,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/install-elixir@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
       - name: Set OS deps compile partition count
         run: echo "MIX_OS_DEPS_COMPILE_PARTITION_COUNT=$(($(lscpu -p | grep -v '^#' | sort -u -t, -k 2,4 | wc -l) / 2))" >> $GITHUB_ENV
@@ -48,6 +61,11 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/mix-test@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
@@ -59,6 +77,11 @@ jobs:
       combos: ${{ steps.resolve.outputs.combos }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - name: Resolve supported Elixir/OTP combinations
         id: resolve
         env:
@@ -129,6 +152,11 @@ jobs:
         include: ${{ fromJSON(needs.version-matrix.outputs.combos) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       # Rewriting .tool-versions rather than calling setup-beam directly: every
       # staple action installs Elixir from that file, so an explicit setup-beam
       # step would just be overwritten.
@@ -167,6 +195,11 @@ jobs:
       security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/mix-credo@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
@@ -187,6 +220,11 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/mix-format@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
@@ -198,6 +236,11 @@ jobs:
     if: ${{ inputs.enable-spark-formatter }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
@@ -210,6 +253,11 @@ jobs:
     if: ${{ inputs.enable-spark-cheat-sheets }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
@@ -225,6 +273,11 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/mix-dialyzer@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
@@ -235,6 +288,11 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/mix-hex-audit@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
       - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
@@ -247,6 +305,11 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: test
@@ -257,6 +320,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - name: REUSE compliance check
         uses: fsfe/reuse-action@676e2d560c9a403aa252096d99fcab3e1132b0f5 # v6
 
@@ -266,6 +334,11 @@ jobs:
     needs: build-test
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/mix-docs@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
         with:
           mix-env: dev
@@ -338,6 +411,11 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Install OS packages
+        if: inputs.os-packages != ''
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ${{ inputs.os-packages }}
       - name: Extract release notes from CHANGELOG.md
         id: extract-notes
         run: |
