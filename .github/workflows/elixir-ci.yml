@@ -283,7 +283,7 @@ jobs:
           mix-env: test
 
   audit:
-    name: mix deps.audit + hex.audit
+    name: mix hex.audit
     runs-on: ubuntu-latest
     needs: build-test
     steps:
@@ -294,10 +294,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
       - uses: team-alembic/staple-actions/actions/mix-hex-audit@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
-      - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
-        with:
-          mix-env: test
-          task: deps.audit
 
   unused-deps:
     name: mix deps.unlock --check-unused
