@@ -47,10 +47,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
-      - uses: team-alembic/staple-actions/actions/install-elixir@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/install-elixir@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
       - name: Set OS deps compile partition count
         run: echo "MIX_OS_DEPS_COMPILE_PARTITION_COUNT=$(($(lscpu -p | grep -v '^#' | sort -u -t, -k 2,4 | wc -l) / 2))" >> $GITHUB_ENV
-      - uses: team-alembic/staple-actions/actions/mix-compile@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-compile@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
           args: "--warnings-as-errors"
@@ -66,7 +66,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
-      - uses: team-alembic/staple-actions/actions/mix-test@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-test@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
 
@@ -182,7 +182,7 @@ jobs:
       # No --warnings-as-errors here: older Elixir versions emit warnings the
       # pinned one does not, and this job is about compiling and passing, not
       # warning hygiene. build-test covers that on the pinned version.
-      - uses: team-alembic/staple-actions/actions/mix-test@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-test@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
           cache-prefix: elixir-${{ matrix.elixir }}-otp-${{ matrix.otp_major }}
@@ -200,11 +200,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
-      - uses: team-alembic/staple-actions/actions/mix-credo@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-credo@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
       - name: Run Credo SAST
-        uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+        uses: team-alembic/staple-actions/actions/mix-task@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
           task: credo --format sarif > results.sarif
@@ -225,7 +225,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
-      - uses: team-alembic/staple-actions/actions/mix-format@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-format@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
 
@@ -241,7 +241,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
-      - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-task@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
           task: spark.formatter --check
@@ -258,11 +258,11 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
-      - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-task@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
           task: spark.cheat_sheets --dry-run --yes
-      - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-task@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
           task: spark.cheat_sheets --check
@@ -278,7 +278,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
-      - uses: team-alembic/staple-actions/actions/mix-dialyzer@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-dialyzer@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
 
@@ -293,7 +293,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
-      - uses: team-alembic/staple-actions/actions/mix-hex-audit@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-hex-audit@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
 
   unused-deps:
     name: mix deps.unlock --check-unused
@@ -306,7 +306,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
-      - uses: team-alembic/staple-actions/actions/mix-task@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-task@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
           task: deps.unlock --check-unused
@@ -335,7 +335,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y ${{ inputs.os-packages }}
-      - uses: team-alembic/staple-actions/actions/mix-docs@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-docs@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: dev
           use-cache: false
@@ -483,7 +483,7 @@ jobs:
             --title ${GITHUB_REF#refs/tags/} \
             --generate-notes \
             ${GITHUB_REF#refs/tags/}
-      - uses: team-alembic/staple-actions/actions/mix-hex-publish@eb07547a6626ccf508fb4b293b821fde0253ed4f # main
+      - uses: team-alembic/staple-actions/actions/mix-hex-publish@6b230743bd7cf29783c70b174132d1c9ae849d34 # main
         with:
           mix-env: test
           hex-api-key: ${{ secrets.HEX_API_KEY }}
